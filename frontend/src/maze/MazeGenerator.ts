@@ -121,19 +121,31 @@ export class MazeGenerator {
     }
 
     private calculateExit() {
-        // Top-right or bottom-right quadrant logic, or simple search
-        // We will place the exit at the bottom right corner if it's open, or find the nearest valid path node
-        this.exitPos = { x: this.width - 2, y: this.height - 2 };
-
-        // Fallback if exactly corner isn't carved (due to odd shape edge conditions)
-        for (let y = this.height - 2; y > 0; y--) {
-            for (let x = this.width - 2; x > 0; x--) {
+        // Find all possible path cells
+        const validPaths: GridPos[] = [];
+        for (let y = 1; y < this.height - 1; y++) {
+            for (let x = 1; x < this.width - 1; x++) {
                 if (this.grid[y][x] === CellType.PATH) {
-                    this.exitPos = { x, y };
-                    this.grid[y][x] = CellType.EXIT;
-                    return;
+                    validPaths.push({ x, y });
                 }
             }
         }
+
+        // Sort by Manhattan distance from start (1,1)
+        validPaths.sort((a, b) => {
+            const distA = Math.abs(a.x - 1) + Math.abs(a.y - 1);
+            const distB = Math.abs(b.x - 1) + Math.abs(b.y - 1);
+            return distB - distA; // Descending (furthest first)
+        });
+
+        // Take the top 10% furthest points (minimum 1 to ensure it works on tiny maps)
+        const candidatesCount = Math.max(1, Math.floor(validPaths.length * 0.10));
+        const candidates = validPaths.slice(0, candidatesCount);
+
+        // Pick one randomly from the furthest candidates
+        const chosen = this.rng.pick(candidates) || candidates[0];
+
+        this.exitPos = { x: chosen.x, y: chosen.y };
+        this.grid[chosen.y][chosen.x] = CellType.EXIT;
     }
 }
