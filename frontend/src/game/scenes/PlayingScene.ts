@@ -45,7 +45,7 @@ export default class PlayingScene extends Phaser.Scene {
         const mazePixelHeight = mazeGen.grid.length * this.cellSize;
 
         // Reserve top space for HUD and bottom space for Joystick
-        const hudOffset = 80;
+        const hudOffset = 110;
         const joystickOffset = 150;
         const availableHeight = this.scale.height - hudOffset - joystickOffset;
 

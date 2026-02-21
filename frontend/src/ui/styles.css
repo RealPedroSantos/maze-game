@@ -190,9 +190,9 @@ button.neon-btn:active {
 /* In-game HUD */
 .hud-container {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
+  top: 45px;
+  left: 15px;
+  right: 15px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
