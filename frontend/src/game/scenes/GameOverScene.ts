@@ -11,13 +11,13 @@ export default class GameOverScene extends Phaser.Scene {
             fontSize: '48px', color: '#ff0000', fontFamily: 'Courier'
         }).setOrigin(0.5);
 
-        this.add.text(width / 2, height / 2 + 50, 'Click to retry', {
+        this.add.text(width / 2, height / 2 + 50, 'Tocar para jogar novamente', {
             fontSize: '24px', color: '#ffffff', fontFamily: 'Courier'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => this.scene.start('PlayingScene'));
 
-        this.add.text(width / 2, height / 2 + 100, 'Back to Menu', {
+        this.add.text(width / 2, height / 2 + 100, 'Voltar ao Menu', {
             fontSize: '24px', color: '#aaaaaa', fontFamily: 'Courier'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })

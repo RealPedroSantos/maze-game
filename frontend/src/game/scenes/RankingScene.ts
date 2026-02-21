@@ -9,11 +9,11 @@ export default class RankingScene extends Phaser.Scene {
     async create(data: { victory?: boolean }) {
         const { width, height } = this.scale;
 
-        this.add.text(width / 2, 50, data.victory ? 'YOU COMPLETED THE MAZE!' : 'GLOBAL RANKING', {
+        this.add.text(width / 2, 50, data.victory ? 'VOCÊ COMPLETOU O LABIRINTO!' : 'RANKING GLOBAL', {
             fontSize: '32px', color: '#ffff00', fontFamily: 'Courier'
         }).setOrigin(0.5);
 
-        this.add.text(width / 2, 80, 'Loading...', { fontSize: '18px', color: '#aaaaaa' }).setOrigin(0.5).setName('loading');
+        this.add.text(width / 2, 80, 'Carregando...', { fontSize: '18px', color: '#aaaaaa' }).setOrigin(0.5).setName('loading');
 
         const leaderboard = await ApiClient.fetchLeaderboard(10);
 
@@ -31,12 +31,12 @@ export default class RankingScene extends Phaser.Scene {
         });
 
         if (leaderboard.length === 0) {
-            this.add.text(width / 2, startY, 'No records found or Offline.', {
+            this.add.text(width / 2, startY, 'Nenhum recorde encontrado ou Offline.', {
                 fontSize: '20px', color: '#8892b0', fontFamily: 'Courier'
             }).setOrigin(0.5);
         }
 
-        this.add.text(width / 2, height - 50, '[ BACK TO MENU ]', {
+        this.add.text(width / 2, height - 50, '[ VOLTAR AO MENU ]', {
             fontSize: '24px', color: '#aaffaa', fontFamily: 'Courier'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })

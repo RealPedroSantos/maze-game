@@ -22,21 +22,21 @@ export class UIManager {
       <!-- Name Request Modal -->
       <div id="name-modal" class="modal-overlay">
         <div class="modal-content">
-          <h2 class="modal-title">Identify Setup</h2>
-          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Enter your callsign to enter the maze.</p>
-          <input type="text" id="player-name-input" class="modern-input" placeholder="Your Name (3-20 chars)" maxlength="20" />
-          <button id="player-submit-btn" class="neon-btn">INITIALIZE</button>
+          <h2 class="modal-title">IDENTIFIQUE-SE</h2>
+          <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Digite seu nome para entrar no labirinto.</p>
+          <input type="text" id="player-name-input" class="modern-input" placeholder="Seu Nome (3-20 chars)" maxlength="20" />
+          <button id="player-submit-btn" class="neon-btn">INICIAR</button>
         </div>
       </div>
 
       <!-- In-game HUD -->
       <div id="game-hud" class="hud-container">
         <div class="hud-box">
-          <div class="hud-label">LEVEL</div>
+          <div class="hud-label">NÍVEL</div>
           <div id="hud-level" class="hud-value">1</div>
         </div>
         <div class="hud-box" style="text-align: right;">
-          <div class="hud-label">TARGET</div>
+          <div class="hud-label">RECORDE</div>
           <div id="hud-best" class="hud-value">--</div>
         </div>
       </div>
