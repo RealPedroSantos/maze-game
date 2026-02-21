@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Veículos - API Brasil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-glass {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .input-glass:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            transition: opacity 0.3s, transform 0.1s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="p-4 sm:p-8 w-full">
+
+    <div class="max-w-4xl w-full mx-auto space-y-6">
+
+        <!-- Header -->
+        <div class="text-center space-y-2 mt-8 mb-10">
+            <h1
+                class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center gap-3">
+                <i data-lucide="car-front" class="w-10 h-10 text-purple-400"></i>
+                Consulta de Placa
+            </h1>
+            <p class="text-slate-400 text-sm">Integração baseada em créditos APIBrasil</p>
+        </div>
+
+        <!-- Formulário de Pesquisa -->
+        <div class="glass-panel p-6 sm:p-8 w-full max-w-xl mx-auto">
+            <form id="searchForm" class="space-y-4">
+
+                <!-- Placa Input -->
+                <div class="space-y-2">
+                    <label for="placa" class="block text-sm font-medium text-slate-300">Placa do Veículo (Mercosul ou
+                        Antiga)</label>
+                    <div class="relative">
+                        <input type="text" id="placa"
+                            class="input-glass w-full rounded-xl px-4 py-3 text-lg font-bold tracking-widest text-center uppercase placeholder-slate-500"
+                            placeholder="ABC-1234" required maxlength="8" autocomplete="off">
+                    </div>
+                </div>
+
+                <!-- Configurações Avançadas (Escondido por padrão) -->
+                <details class="text-sm text-slate-400 group">
+                    <summary class="cursor-pointer hover:text-purple-400 transition mb-2">Configurações de API
+                        (Credenciais)</summary>
+                    <div class="space-y-3 pt-3">
+                        <div>
+                            <label class="block text-xs mb-1">Bearer Token</label>
+                            <input type="text" id="bearerToken" class="input-glass w-full rounded-lg px-3 py-2 text-xs"
+                                value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2dhdGV3YXkuYXBpYnJhc2lsLmlvL2FwaS9vYXV0aC9leGNoYW5nZSIsImlhdCI6MTc3MTYzMjE5NSwiZXhwIjoxODAzMTY4MTk1LCJuYmYiOjE3NzE2MzIxOTUsImp0aSI6IjNOU05tVllvT01KREZzMVIiLCJzdWIiOiIxOTgzNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJ1c2VyX2lkIjoxNjM2NCwiZW1haWwiOiJhcnR1ci51bWJlbGlub0BhcGlicmFzaWwuY29tLmJyIn0.zRUAn61fr7yO-u78tjON5w54kDKGFUmxndruoczPHAw">
+                        </div>
+                        <div>
+                            <label class="block text-xs mb-1">Device Token</label>
+                            <input type="text" id="deviceToken" class="input-glass w-full rounded-lg px-3 py-2 text-xs"
+                                value="a635af2b-c919-4a89-8ba1-3575fc6cf473">
+                        </div>
+                        <div>
+                            <label class="block text-xs mb-1">URL do Endpoint</label>
+                            <input type="text" id="endpoint" class="input-glass w-full rounded-lg px-3 py-2 text-xs"
+                                value="https://gateway.apibrasil.io/api/v2/creditos/a20asj1a94-ecaf-21b7-a765-12a56aa66">
+                        </div>
+                    </div>
+                </details>
+
+                <button type="submit" id="submitBtn"
+                    class="btn-primary w-full rounded-xl py-3.5 px-4 font-semibold text-white shadow-lg flex items-center justify-center gap-2 mt-2">
+                    <i data-lucide="search" class="w-5 h-5" id="btnIcon"></i>
+                    <span id="btnText">Consultar Veículo</span>
+                    <div id="btnSpinner" class="spinner hidden"></div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Área de Resultados -->
+        <div id="resultArea" class="hidden">
+            <h2 class="text-xl font-semibold mb-4 text-slate-200">Resultado da Consulta</h2>
+
+            <!-- Erro -->
+            <div id="errorBox" class="hidden glass-panel border-red-500/30 bg-red-500/10 p-4 mb-6">
+                <div class="flex items-start gap-3 text-red-400">
+                    <i data-lucide="alert-circle" class="w-6 h-6 mt-0.5"></i>
+                    <div>
+                        <h3 class="font-bold">Erro na consulta</h3>
+                        <p id="errorText" class="text-sm mt-1"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dados do Veículo -->
+            <div id="dataBox" class="hidden glass-panel p-6 sm:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6" id="dataGrid">
+                    <!-- Javascript vai popular isso aqui -->
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/10">
+                    <details class="text-sm text-slate-400">
+                        <summary class="cursor-pointer hover:text-white transition">Ver JSON Bruto (Raw)</summary>
+                        <pre id="rawJson"
+                            class="mt-3 p-4 rounded-lg bg-black/40 overflow-x-auto text-xs text-green-400 border border-white/5"></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // Máscara simples para placa
+        const placaInput = document.getElementById('placa');
+        placaInput.addEventListener('input', function (e) {
+            let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (val.length > 3 && !val.includes('-')) {
+                // Insere hífen automaticamente se for formato antigo (AAA-1234)
+                if (!isNaN(val[3])) {
+                    val = val.substring(0, 3) + '-' + val.substring(3);
+                }
+            }
+            e.target.value = val.substring(0, 8);
+        });
+
+        // Formulário Submit
+        document.getElementById('searchForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const placa = placaInput.value.replace('-', '').toUpperCase();
+            const bearerToken = document.getElementById('bearerToken').value;
+            const deviceToken = document.getElementById('deviceToken').value;
+            const endpoint = document.getElementById('endpoint').value;
+
+            setLoading(true);
+            hideResults();
+
+            try {
+                // Tentativa de Request
+                // A maioria dos endpoints da APIBrasil aceita POST com a placa no body
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${bearerToken}`,
+                        'DeviceToken': deviceToken
+                    },
+                    body: JSON.stringify({ device_token: deviceToken, placa: placa })
+                });
+
+                const data = await response.json();
+
+                // Verifica se deu sucesso (pode vir no http status ou no campo 'error')
+                if (!response.ok || data.error || (data.dados && data.dados.erro)) {
+                    throw new Error(data.message || data.mensagem || 'Veículo não encontrado ou token inválido.');
+                }
+
+                renderData(data.dados || data);
+
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        function renderData(data) {
+            document.getElementById('resultArea').classList.remove('hidden');
+            document.getElementById('dataBox').classList.remove('hidden');
+            document.getElementById('rawJson').textContent = JSON.stringify(data, null, 2);
+
+            const grid = document.getElementById('dataGrid');
+            grid.innerHTML = ''; // Clear
+
+            // Dicionário de labels mais agradáveis (Mapeando os retornos comuns da APIBrasil)
+            const mapKeys = {
+                'placa': 'Placa',
+                'marca_modelo': 'Marca / Modelo',
+                'marca': 'Marca',
+                'modelo': 'Modelo',
+                'ano': 'Ano',
+                'ano_modelo': 'Ano Modelo',
+                'ano_fabricacao': 'Ano Fabricação',
+                'cor': 'Cor',
+                'chassi': 'Chassi (Mascarado)',
+                'renavam': 'Renavam',
+                'municipio': 'Município',
+                'uf': 'UF',
+                'situacao': 'Situação',
+                'segmento': 'Categoria',
+                'motor': 'Motor'
+            };
+
+            // Para exibir as informações de forma limpa, vamos iterar as chaves
+            const keysToIgnore = ['logo', 'imagem', 'status'];
+
+            for (const [key, value] of Object.entries(data)) {
+                if (keysToIgnore.includes(key) || !value) continue;
+                if (typeof value === 'object') continue; // Ignora arrays ou sub-objetos grandes
+
+                const label = mapKeys[key] || key.replace(/_/g, ' ').toUpperCase();
+
+                const item = document.createElement('div');
+                item.className = 'flex flex-col border-b border-white/5 pb-2';
+                item.innerHTML = `
+                    <span class="text-xs font-semibold text-purple-300 uppercase tracking-wider">${label}</span>
+                    <span class="text-lg font-medium text-white break-words mt-1">${value}</span>
+                `;
+                grid.appendChild(item);
+            }
+
+            // Exemplo de como mostrar algo genérico se veio vazio
+            if (grid.innerHTML === '') {
+                grid.innerHTML = '<span class="text-slate-400">Nenhum dado formatável retornado. Verifique o JSON bruto.</span>';
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('resultArea').classList.remove('hidden');
+            document.getElementById('errorBox').classList.remove('hidden');
+            document.getElementById('errorText').textContent = msg;
+        }
+
+        function hideResults() {
+            document.getElementById('resultArea').classList.add('hidden');
+            document.getElementById('errorBox').classList.add('hidden');
+            document.getElementById('dataBox').classList.add('hidden');
+            document.getElementById('errorText').textContent = '';
+        }
+
+        function setLoading(isLoading) {
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const btn = document.getElementById('submitBtn');
+
+            if (isLoading) {
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+                btnIcon.classList.add('hidden');
+                btnText.textContent = 'Buscando...';
+                btnSpinner.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+                btnIcon.classList.remove('hidden');
+                btnText.textContent = 'Consultar Veículo';
+                btnSpinner.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>

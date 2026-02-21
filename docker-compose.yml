@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: maze_user
+      POSTGRES_PASSWORD: maze_password
+      POSTGRES_DB: maze_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://maze_user:maze_password@db:5432/maze_db
+      - PORT=3000
+    depends_on:
+      - db
+
+  old-game:
+    build: ./old-game
+    volumes:
+      - ./old-game:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - old-game
+      - frontend
+      - backend
+
+volumes:
+  pgdata:

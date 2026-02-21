@@ -1,0 +1,226 @@
+/**
+ * Retro + Modern Maze Game UI
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+  --primary-color: #00ffcc;
+  --bg-color: #050510;
+  --text-main: #ffffff;
+  --text-muted: #8892b0;
+  --glass-bg: rgba(10, 20, 30, 0.7);
+  --glass-border: rgba(0, 255, 204, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+  /* No text selection inside game */
+  -webkit-user-select: none;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* No scrolling */
+  background-color: var(--bg-color);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Background canvas container */
+#app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#app canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* UI Overlay container over Phaser Canvas */
+#ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+  /* Let touches pass through to Phaser by default */
+}
+
+/* HUD */
+.hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.2rem;
+  z-index: 10;
+  text-shadow: 2px 2px 0 #000;
+  pointer-events: none;
+}
+
+/* CRT Scanlines and Retro filter */
+body::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 999;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+/* Common Modal Styling (Glassmorphism + Neon) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: auto;
+  /* Catch clicks */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-title {
+  color: var(--primary-color);
+  font-size: 24px;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+input.modern-input {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 18px;
+  font-family: 'Outfit', sans-serif;
+  text-align: center;
+  margin-bottom: 20px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input.modern-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+}
+
+button.neon-btn {
+  background: linear-gradient(45deg, #00b38f, var(--primary-color));
+  color: #000;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 100%;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+button.neon-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+}
+
+button.neon-btn:active {
+  transform: scale(0.98);
+}
+
+/* In-game HUD */
+.hud-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.hud-container.active {
+  opacity: 1;
+}
+
+.hud-box {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 10px 20px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.hud-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hud-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+}
