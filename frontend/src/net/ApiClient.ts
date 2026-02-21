@@ -11,6 +11,13 @@ export interface LeaderboardEntry {
 
 export class ApiClient {
     public static async fetchLeaderboard(limit: number = 50): Promise<LeaderboardEntry[]> {
+        if (window.location.hostname.includes('github.io')) {
+            return [
+                { name: 'GitHubRunner', best_level: 50, crowned: true, updated_at: new Date().toISOString() },
+                { name: 'LocalPlayer', best_level: 15, crowned: false, updated_at: new Date().toISOString() }
+            ];
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/leaderboard?limit=${limit}`);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -23,6 +30,11 @@ export class ApiClient {
     }
 
     public static async submitScore(name: string, levelReached: number): Promise<boolean> {
+        if (window.location.hostname.includes('github.io')) {
+            console.log('GitHub Pages: Fake score submission', { name, levelReached });
+            return true;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/score`, {
                 method: 'POST',
