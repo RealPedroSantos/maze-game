@@ -12,7 +12,10 @@ export class GameData {
         const storedName = localStorage.getItem('maze_playerName');
         const storedBest = localStorage.getItem('maze_bestLevel');
         if (storedName) this.playerName = storedName;
-        if (storedBest) this.bestLevel = parseInt(storedBest, 10);
+        if (storedBest) {
+            this.bestLevel = parseInt(storedBest, 10);
+            this.currentLevel = Math.max(1, this.bestLevel);
+        }
     }
 
     public static getInstance(): GameData {
@@ -23,8 +26,13 @@ export class GameData {
     }
 
     public setPlayerName(name: string) {
-        this.playerName = name;
-        localStorage.setItem('maze_playerName', name);
+        if (this.playerName !== name) {
+            this.playerName = name;
+            this.bestLevel = 0;
+            this.currentLevel = 1;
+            localStorage.setItem('maze_playerName', name);
+            localStorage.setItem('maze_bestLevel', '0');
+        }
     }
 
     public updateBestLevel(level: number) {
