@@ -11,7 +11,7 @@ export default class GameOverScene extends Phaser.Scene {
             fontSize: '48px', color: '#ff0000', fontFamily: 'Courier'
         }).setOrigin(0.5);
 
-        this.add.text(width / 2, height / 2 + 50, 'Tocar para jogar novamente', {
+        this.add.text(width / 2, height / 2 + 50, 'Jogar novamente', {
             fontSize: '24px', color: '#ffffff', fontFamily: 'Courier'
         }).setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
