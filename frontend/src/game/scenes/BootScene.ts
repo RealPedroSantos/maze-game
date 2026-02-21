@@ -17,7 +17,7 @@ export default class BootScene extends Phaser.Scene {
         // Check if player name exists
         const gameData = GameData.getInstance();
 
-        if (!gameData.playerName) {
+        if (!gameData.playerName || gameData.playerName.trim() === '') {
             text.setText('Awaiting Identification...');
             const name = await UIManager.getInstance().showNamePrompt();
             gameData.setPlayerName(name);
