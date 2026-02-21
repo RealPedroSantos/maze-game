@@ -60,19 +60,48 @@ export class AudioManager {
                 osc.stop(now + 0.3);
                 break;
 
-            case 'victory': // Upward arpeggio (beating a level)
+            case 'victory': // SF2 Style Jingle "TARÃRÃRÃ... tarã"
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(440, now); // A4
-                osc.frequency.setValueAtTime(554.37, now + 0.1); // C#5
-                osc.frequency.setValueAtTime(659.25, now + 0.2); // E5
-                osc.frequency.setValueAtTime(880, now + 0.3); // A5
 
-                gainNode.gain.setValueAtTime(0.1, now);
-                gainNode.gain.setValueAtTime(0.1, now + 0.3);
-                gainNode.gain.linearRampToValueAtTime(0, now + 0.6);
+                // Triumphant C Major Arpeggio: G4, C5, E5, G5 ... E5, G5
+                const notes = [
+                    { f: 392.00, t: 0.00, dur: 0.10 }, // G4
+                    { f: 523.25, t: 0.10, dur: 0.10 }, // C5
+                    { f: 659.25, t: 0.20, dur: 0.10 }, // E5
+                    { f: 783.99, t: 0.30, dur: 0.40 }, // G5 (Hold)
+
+                    { f: 659.25, t: 0.85, dur: 0.15 }, // E5 (ta)
+                    { f: 783.99, t: 1.00, dur: 0.40 }  // G5 (rã)
+                ];
+
+                gainNode.gain.setValueAtTime(0, now);
+
+                notes.forEach(note => {
+                    osc.frequency.setValueAtTime(note.f, now + note.t);
+                    gainNode.gain.setValueAtTime(0.15, now + note.t);
+                    gainNode.gain.setValueAtTime(0.15, now + note.t + note.dur - 0.02);
+                    gainNode.gain.linearRampToValueAtTime(0, now + note.t + note.dur);
+                });
+
+                // Add a second detuned sawtooth oscillator for that thick CPS-1 Arcade sound
+                const osc2 = this.ctx.createOscillator();
+                const gain2 = this.ctx.createGain();
+                osc2.type = 'sawtooth';
+                osc2.connect(gain2);
+                gain2.connect(this.ctx.destination);
+                gain2.gain.setValueAtTime(0, now);
+
+                notes.forEach(note => {
+                    osc2.frequency.setValueAtTime(note.f * 1.01, now + note.t); // slightly detuned 
+                    gain2.gain.setValueAtTime(0.1, now + note.t);
+                    gain2.gain.setValueAtTime(0.1, now + note.t + note.dur - 0.02);
+                    gain2.gain.linearRampToValueAtTime(0, now + note.t + note.dur);
+                });
 
                 osc.start(now);
-                osc.stop(now + 0.6);
+                osc.stop(now + 1.5);
+                osc2.start(now);
+                osc2.stop(now + 1.5);
                 break;
         }
     }
