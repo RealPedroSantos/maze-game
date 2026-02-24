@@ -6,6 +6,8 @@ export class GameData {
     public currentLevel: number = 1;
     public runId: string = '';
     public runStartTime: number = 0;
+    public coins: number = 0;
+    public totalCoins: number = 0;
 
     private constructor() {
         // Load from local storage if exists
@@ -40,5 +42,14 @@ export class GameData {
             this.bestLevel = level;
             localStorage.setItem('maze_bestLevel', level.toString());
         }
+    }
+
+    public addCoin() {
+        this.coins++;
+        this.totalCoins++;
+    }
+
+    public resetLevelCoins() {
+        this.coins = 0;
     }
 }

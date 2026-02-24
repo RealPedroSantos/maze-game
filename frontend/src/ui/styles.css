@@ -224,3 +224,12 @@ button.neon-btn:active {
   font-weight: 800;
   color: var(--text-main);
 }
+
+.hud-coins {
+  text-align: center;
+}
+
+.hud-coins-value {
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}

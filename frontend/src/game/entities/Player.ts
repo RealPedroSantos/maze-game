@@ -2,6 +2,9 @@ import Phaser from 'phaser';
 
 export class Player extends Phaser.GameObjects.Arc {
     private speed = 100;
+    private baseSpeed = 100;
+    private isSlowed = false;
+    private slowTimer: Phaser.Time.TimerEvent | null = null;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 8, 0, 360, false, 0x00ffcc, 1);
@@ -24,5 +27,27 @@ export class Player extends Phaser.GameObjects.Arc {
         const body = this.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(0, 0);
         this.setActive(false).setVisible(false);
+    }
+
+    public applySlow(durationMs: number = 1500) {
+        if (this.isSlowed) {
+            // Reset timer if already slowed
+            if (this.slowTimer) this.slowTimer.remove();
+        }
+
+        this.isSlowed = true;
+        this.speed = this.baseSpeed * 0.4;
+        this.setFillStyle(0xff4444, 1); // Red tint while slowed
+
+        this.slowTimer = this.scene.time.delayedCall(durationMs, () => {
+            this.speed = this.baseSpeed;
+            this.isSlowed = false;
+            this.setFillStyle(0x00ffcc, 1); // Restore original color
+            this.slowTimer = null;
+        });
+    }
+
+    public getIsSlowed(): boolean {
+        return this.isSlowed;
     }
 }

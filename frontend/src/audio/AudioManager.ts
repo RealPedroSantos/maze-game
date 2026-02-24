@@ -23,7 +23,7 @@ export class AudioManager {
     }
 
     // Pure mathematical beep synthesis using oscillator for that retro feel without loading .wav files
-    public playSound(type: 'coin' | 'hurt' | 'victory') {
+    public playSound(type: 'coin' | 'hurt' | 'victory' | 'trap') {
         if (!this.ctx) return;
 
         // Resume context if suspended (browser auto-play policy)
@@ -48,6 +48,16 @@ export class AudioManager {
                 gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
                 osc.start(now);
                 osc.stop(now + 0.1);
+                break;
+
+            case 'trap': // Low distorted buzz
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.exponentialRampToValueAtTime(60, now + 0.2);
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
                 break;
 
             case 'hurt': // Low pitched decreasing buzz (hitting a wall)

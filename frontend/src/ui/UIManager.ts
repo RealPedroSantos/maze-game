@@ -35,6 +35,10 @@ export class UIManager {
           <div class="hud-label">NÍVEL</div>
           <div id="hud-level" class="hud-value">1</div>
         </div>
+        <div class="hud-box hud-coins">
+          <div class="hud-label">MOEDAS</div>
+          <div id="hud-coins" class="hud-value hud-coins-value">0</div>
+        </div>
         <div class="hud-box" style="text-align: right;">
           <div class="hud-label">RECORDE</div>
           <div id="hud-best" class="hud-value">--</div>
@@ -97,6 +101,11 @@ export class UIManager {
         const bestEl = document.getElementById('hud-best');
         if (levelEl) levelEl.textContent = level.toString();
         if (bestEl) bestEl.textContent = best.toString();
+    }
+
+    public updateCoins(count: number) {
+        const coinsEl = document.getElementById('hud-coins');
+        if (coinsEl) coinsEl.textContent = count.toString();
     }
 
     private showModal(id: string) {

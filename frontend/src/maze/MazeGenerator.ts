@@ -4,7 +4,9 @@ export enum CellType {
     WALL = 1,
     PATH = 0,
     START = 2,
-    EXIT = 3
+    EXIT = 3,
+    COIN = 4,
+    TRAP = 5
 }
 
 export interface GridPos {
@@ -20,6 +22,8 @@ export class MazeGenerator {
 
     public startPos: GridPos = { x: 1, y: 1 };
     public exitPos: GridPos = { x: 1, y: 1 };
+    public coinPositions: GridPos[] = [];
+    public trapPositions: GridPos[] = [];
 
     constructor(width: number, height: number, seed: string) {
         // Ensure odd dimensions for the standard maze topology
@@ -43,6 +47,49 @@ export class MazeGenerator {
         this.calculateExit();
 
         return this.grid;
+    }
+
+    /**
+     * Places coins and traps on PATH cells, avoiding a safe zone around START.
+     */
+    public placeItems(coinCount: number, trapCount: number) {
+        // Collect all PATH cells that are not too close to start
+        const candidates: GridPos[] = [];
+        const safeRadius = 3; // Manhattan distance from start to keep clear
+
+        for (let y = 1; y < this.height - 1; y++) {
+            for (let x = 1; x < this.width - 1; x++) {
+                if (this.grid[y][x] === CellType.PATH) {
+                    const distFromStart = Math.abs(x - this.startPos.x) + Math.abs(y - this.startPos.y);
+                    if (distFromStart > safeRadius) {
+                        candidates.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Shuffle candidates deterministically
+        for (let i = candidates.length - 1; i > 0; i--) {
+            const j = Math.floor(this.rng.next() * (i + 1));
+            [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+        }
+
+        // Place coins first
+        const actualCoins = Math.min(coinCount, candidates.length);
+        for (let i = 0; i < actualCoins; i++) {
+            const pos = candidates[i];
+            this.grid[pos.y][pos.x] = CellType.COIN;
+            this.coinPositions.push(pos);
+        }
+
+        // Place traps from remaining candidates
+        const remaining = candidates.slice(actualCoins);
+        const actualTraps = Math.min(trapCount, remaining.length);
+        for (let i = 0; i < actualTraps; i++) {
+            const pos = remaining[i];
+            this.grid[pos.y][pos.x] = CellType.TRAP;
+            this.trapPositions.push(pos);
+        }
     }
 
     private recursiveBacktracker(startX: number, startY: number) {
