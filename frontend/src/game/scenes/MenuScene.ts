@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { GameData } from '../GameData';
 import { UIManager } from '../../ui/UIManager';
 
+const GAME_VERSION = 'v1.2.0';
+
 export default class MenuScene extends Phaser.Scene {
     constructor() {
         super('MenuScene');
@@ -37,5 +39,10 @@ export default class MenuScene extends Phaser.Scene {
                     playerLabel.setText(`Jogador: ${gameData.playerName} (Mudar)`);
                 }
             });
+
+        // Version display
+        this.add.text(width / 2, height - 30, GAME_VERSION, {
+            fontSize: '14px', color: '#445566', fontFamily: 'Courier'
+        }).setOrigin(0.5);
     }
 }
