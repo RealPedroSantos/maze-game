@@ -94,6 +94,7 @@ export default class PlayingScene extends Phaser.Scene {
         UIManager.getInstance().showHUD();
         UIManager.getInstance().updateHUD(gameData.currentLevel, gameData.bestLevel || '--');
         UIManager.getInstance().updateCoins(0);
+        UIManager.getInstance().updateLives(gameData.lives);
     }
 
     private drawMaze(mazeGen: MazeGenerator) {
@@ -190,14 +191,23 @@ export default class PlayingScene extends Phaser.Scene {
         this.cameras.main.shake(300, 0.02);
         this.cameras.main.flash(300, 255, 0, 0);
 
-        // After shake, game over
+        const gameData = GameData.getInstance();
+        const hasLivesLeft = gameData.loseLife();
+
         this.time.delayedCall(400, () => {
-            UIManager.getInstance().hideHUD();
-            this.scene.start('GameOverScene');
+            if (hasLivesLeft) {
+                // Still has lives: retry same level
+                this.scene.restart();
+            } else {
+                // All 3 lives lost: reset to level 1
+                gameData.resetRun();
+                UIManager.getInstance().hideHUD();
+                this.scene.start('GameOverScene');
+            }
         });
     }
 
-    private handleCoinCollect(_player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile, coin: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
+    private handleCoinCollect(_player: any, coin: any) {
         const coinObj = coin as Phaser.GameObjects.Arc;
         coinObj.destroy();
 
@@ -208,12 +218,10 @@ export default class PlayingScene extends Phaser.Scene {
         UIManager.getInstance().updateCoins(gameData.coins);
 
         // Golden flash effect on camera
-        this.cameras.main.flash(150, 255, 215, 0, false, (_cam: Phaser.Cameras.Scene2D.Camera, progress: number) => {
-            if (progress >= 1) { /* flash done */ }
-        });
+        this.cameras.main.flash(150, 255, 215, 0);
     }
 
-    private handleTrapHit(_player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile, trap: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) {
+    private handleTrapHit(_player: any, trap: any) {
         const trapObj = trap as Phaser.GameObjects.Arc;
         trapObj.destroy();
 
@@ -239,9 +247,10 @@ export default class PlayingScene extends Phaser.Scene {
         this.time.delayedCall(1000, () => {
             if (gameData.currentLevel >= 50) {
                 UIManager.getInstance().hideHUD();
-                this.scene.start('RankingScene', { victory: true }); // Zered the game
+                this.scene.start('RankingScene', { victory: true });
             } else {
                 gameData.currentLevel++;
+                gameData.resetLives(); // Fresh 3 lives for the next level
                 this.scene.restart();
             }
         });

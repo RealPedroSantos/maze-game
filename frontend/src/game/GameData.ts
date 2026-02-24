@@ -8,6 +8,7 @@ export class GameData {
     public runStartTime: number = 0;
     public coins: number = 0;
     public totalCoins: number = 0;
+    public lives: number = 3;
 
     private constructor() {
         // Load from local storage if exists
@@ -51,5 +52,23 @@ export class GameData {
 
     public resetLevelCoins() {
         this.coins = 0;
+    }
+
+    /** Returns true if player still has lives remaining */
+    public loseLife(): boolean {
+        this.lives--;
+        return this.lives > 0;
+    }
+
+    /** Reset to level 1 with full lives (called when all lives lost) */
+    public resetRun() {
+        this.lives = 3;
+        this.currentLevel = 1;
+        this.coins = 0;
+        this.totalCoins = 0;
+    }
+
+    public resetLives() {
+        this.lives = 3;
     }
 }

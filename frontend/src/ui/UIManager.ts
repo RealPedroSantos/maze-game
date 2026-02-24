@@ -39,6 +39,9 @@ export class UIManager {
           <div class="hud-label">MOEDAS</div>
           <div id="hud-coins" class="hud-value hud-coins-value">0</div>
         </div>
+        <div class="hud-box hud-lives">
+          <div id="hud-lives" class="hud-value hud-lives-value">❤️❤️❤️</div>
+        </div>
         <div class="hud-box" style="text-align: right;">
           <div class="hud-label">RECORDE</div>
           <div id="hud-best" class="hud-value">--</div>
@@ -106,6 +109,13 @@ export class UIManager {
     public updateCoins(count: number) {
         const coinsEl = document.getElementById('hud-coins');
         if (coinsEl) coinsEl.textContent = count.toString();
+    }
+
+    public updateLives(lives: number) {
+        const livesEl = document.getElementById('hud-lives');
+        if (livesEl) {
+            livesEl.textContent = '❤️'.repeat(Math.max(0, lives));
+        }
     }
 
     private showModal(id: string) {
